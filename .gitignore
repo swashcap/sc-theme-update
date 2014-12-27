@@ -1,2 +1,6 @@
 .DS_Store
 *.log
+
+theme/*
+!theme/class-wp-theme-updater-client.php
+!theme/wp-theme-updater-config.sample.json
