@@ -73,13 +73,13 @@ class WP_Theme_Updater_Client
             } else {
                 throw new WP_Error(
                     'themes_api_failed',
-                    __('Theme’s automatic updater configuration doesn’t contain an API URL.')
+                    __('Theme’s updater configuration doesn’t contain an API URL.')
                 );
             }
         } else {
             throw new WP_Error(
                 'themes_api_failed',
-                __('Theme’s automatic updater configuration file doesn’t exist.')
+                __('Theme’s updater configuration file doesn’t exist.')
             );
         }
 
