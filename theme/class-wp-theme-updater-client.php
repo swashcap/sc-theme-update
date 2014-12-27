@@ -2,6 +2,8 @@
 
 class WP_Theme_Updater_Client
 {
+    public static $config_file = 'wp-theme-updater-config.json';
+
     public static $theme_slug = '';
     public static $theme_version = '';
     public static $api_url = '';
@@ -63,10 +65,8 @@ class WP_Theme_Updater_Client
      */
     public static function set_theme_data()
     {
-        $config_file = 'config.json';
-
-        if (file_exists($config_file)) {
-            $config = json_decode($config_file, TRUE);
+        if (file_exists(self::$config_file)) {
+            $config = json_decode(self::$config_file, TRUE);
 
             if (isset($config['apiUrl'])) {
                 self::$api_url = $config['apiUrl'];
