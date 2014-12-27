@@ -1,0 +1,21 @@
+{
+  "defaults": {
+    "author": "Your Name",
+    "name": "Your Theme Name",
+    "screenshot_url": "http://mysite.com/path/to/screenshot.png",
+    "url": "http://mysite.com/path/to/theme-home-page"
+  },
+  "packages": [{
+    "version": "2.1.1",
+    "date": "2014-12-26",
+    "file_name": "packed-theme-2.1.1.zip",
+    "requires": "4.1.0",
+    "tested": "4.1.0"
+  }, {
+    "version": "2.1.0",
+    "date": "2014-11-07",
+    "file_name": "packaged-theme-2.1.0.zip",
+    "requires": "4.0",
+    "tested": "4.0"
+  }]
+}
