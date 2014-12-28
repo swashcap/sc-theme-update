@@ -2,29 +2,25 @@
 
 class WP_Theme_Updater_Client
 {
-    public static $config_file = 'wp-theme-updater-config.json';
-
     public static $theme_slug = '';
     public static $theme_version = '';
     public static $api_url = '';
 
     public static function init()
     {
-        add_action('init', 'self::maybe_set_update_transient', 50);
-        add_filter('pre_set_site_transient_update_themes', 'self::check_for_update', 1, 20);
+        add_action('init', __CLASS__ . '::maybe_set_update_transient', 50);
+        add_filter('pre_set_site_transient_update_themes', __CLASS__ . '::check_for_update', 100, 1);
     }
 
     public static function maybe_set_update_transient()
     {
-        if (defined('WP_DEBUG') && WP_DEBUG) {
+        if (defined('WP_THEME_UPDATER_ALWAYS_UPDATE') && WP_THEME_UPDATER_ALWAYS_UPDATE) {
             set_site_transient('update_themes', null);
         }
     }
 
     public static function check_for_update($data)
     {
-        global $wp_version;
-
         // Setup
         self::set_theme_data();
 
@@ -33,28 +29,41 @@ class WP_Theme_Updater_Client
             'version' => self::$theme_version
         );
 
-        $response = wp_remote_post(
-            self::get_api_url(),
-            array(
-                'body' => array(
-                    'action' => 'theme_update',
-                    'request' => serialize($request),
-                    'api-key' => md5(get_bloginfo('url'))
-                )
+        if (defined('DOING_CRON') && DOING_CRON) {
+            $timeout = 30;
+        } else {
+            $timeout = 3;
+        }
+
+        $options = array(
+            'timeout' => $timeout,
+            'body' => array(
+                'themes' => wp_json_encode($request)
             )
         );
 
-        if (! is_wp_error($response) && $response['response']['code'] === 200) {
-            $response = unserialize($response['body']);
-        } else {
-            throw new WP_Error(
-                'themes_api_failed',
-                __('Theme’s automatic updater couldn’t process request', $response);
-            );
+        $raw_response = wp_remote_post(self::$api_url, $options);
+
+        if (is_wp_error($raw_response)) {
+            return $raw_response;
+        } else if (wp_remote_retrieve_response_code($raw_response) !== 200) {
+            return new WP_Error('broke', __('Theme update failed:') . ' ' . print_r($raw_response));
         }
 
-        if (! empty($response)) {
-            $data->response[self::$theme_slug] = $response;
+        $response = json_decode(wp_remote_retrieve_body($raw_response), true);
+
+        if (
+            gettype($response) === 'array' &&
+            isset($response['new_version']) &&
+            isset($response['url']) &&
+            isset($response['package'])
+        ) {
+            $data->response[self::$theme_slug] = array(
+                'theme'       => self::$theme_slug,
+                'new_version' => $response['new_version'],
+                'url'         => $response['url'],
+                'package'     => $response['package']
+            );
         }
 
         return $data;
@@ -65,21 +74,12 @@ class WP_Theme_Updater_Client
      */
     public static function set_theme_data()
     {
-        if (file_exists(self::$config_file)) {
-            $config = json_decode(self::$config_file, TRUE);
-
-            if (isset($config['apiUrl'])) {
-                self::$api_url = $config['apiUrl'];
-            } else {
-                throw new WP_Error(
-                    'themes_api_failed',
-                    __('Theme’s updater configuration doesn’t contain an API URL.')
-                );
-            }
+        if (defined('WP_THEME_UPDATER_API_URL') && WP_THEME_UPDATER_API_URL) {
+            self::$api_url = WP_THEME_UPDATER_API_URL;
         } else {
-            throw new WP_Error(
+            return new WP_Error(
                 'themes_api_failed',
-                __('Theme’s updater configuration file doesn’t exist.')
+                __('Theme’s updater not properly configured.')
             );
         }
 
