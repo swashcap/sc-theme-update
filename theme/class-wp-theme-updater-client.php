@@ -1,17 +1,66 @@
 <?php
+/**
+ * WordPress Theme Update Client.
+ *
+ * This class relies on one PHP constants, `WP_THEME_UPDATER_API_URL`. This
+ * tells the class what URL to query for theme updates. Add it in your
+ * _functions.php_ or another theme configuration file like so:
+ *
+ * ```
+ * define('WP_THEME_UPDATER_API_URL', 'http://yoursite.com/path/to/update/api');
+ * ```
+ *
+ * You may want to test your theme updates during theme development. To force
+ * update server queries for every visit to _Updates_ page visit, set
+ * `WP_THEME_UPDATER_ALWAYS_UPDATE`:
+ *
+ * ```
+ * define('WP_THEME_UPDATER_ALWAYS_UPDATE', true);
+ * ```
+ *
+ * @author   Cory Reed <swashcap@gmail.com>
+ * @package  WP_Theme_Updater
+ */
 
 class WP_Theme_Updater_Client
 {
-    public static $theme_slug = '';
-    public static $theme_version = '';
+    /**
+     * Theme's update API url.
+     *
+     * @var string
+     */
     public static $api_url = '';
 
+    /**
+     * Theme's slug.
+     *
+     * @var string
+     */
+    public static $theme_slug = '';
+
+    /**
+     * Theme's version.
+     *
+     * @var string
+     */
+    public static $theme_version = '';
+
+    /**
+     * Initialize.
+     *
+     * @return void
+     */
     public static function init()
     {
         add_action('init', __CLASS__ . '::maybe_set_update_transient', 50);
         add_filter('pre_set_site_transient_update_themes', __CLASS__ . '::check_for_update', 100, 1);
     }
 
+    /**
+     * Clear the `update_themes` transient.
+     *
+     * @return void
+     */
     public static function maybe_set_update_transient()
     {
         if (defined('WP_THEME_UPDATER_ALWAYS_UPDATE') && WP_THEME_UPDATER_ALWAYS_UPDATE) {
@@ -19,6 +68,12 @@ class WP_Theme_Updater_Client
         }
     }
 
+    /**
+     * Check the server for theme updates.
+     *
+     * @param  object $data `update_themes` transient
+     * @return object       Transformed `update_themes` transient
+     */
     public static function check_for_update($data)
     {
         // Setup
@@ -70,7 +125,11 @@ class WP_Theme_Updater_Client
     }
 
     /**
-     * `wp_get_theme` since WordPress 3.4.0
+     * Set up the class for use.
+     *
+     * `wp_get_theme` has support since WordPress 3.4.0.
+     *
+     * @return void
      */
     public static function set_theme_data()
     {
