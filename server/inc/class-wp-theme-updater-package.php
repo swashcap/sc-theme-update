@@ -51,7 +51,8 @@ class WP_Theme_Updater_Package
             if (isset($latest_package[$key]) && ! empty($latest_package[$key])) {
                 $data->{$key} = $latest_package[$key];
             } else {
-                /** @todo Handle errors */
+                error_log('versions.json lacks required "' . $key . '" property for WP_Theme_Updater_Package');
+                exit;
             }
         }
 
@@ -62,10 +63,11 @@ class WP_Theme_Updater_Package
 
     public function get_package($file_name = '')
     {
-        $package = 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
-        $package .= 'download.php?key=';
-        $package .= md5($file_name . mktime(0, 0, 0, date('n'), date('j'), date('Y')));
+        // $package = WP_THEME_UPDATER_DOWNLOADS_URL;
+        // $package .= 'download.php?key=';
+        // $package .= md5($file_name . mktime(0, 0, 0, date('n'), date('j'), date('Y')));
 
-        return $package;
+        // return $package;
+        return WP_THEME_UPDATER_DOWNLOADS_URL . $file_name;
     }
 }

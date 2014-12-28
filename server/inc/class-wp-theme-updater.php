@@ -4,10 +4,21 @@ require_once 'class-wp-theme-updater-package.php';
 
 class WP_Theme_Updater
 {
+    /**
+     * Internal storage for the incoming request's arguments.
+     * @var array
+     */
     public $request_args = array();
 
+    /**
+     * Internal storage for the latest available package.
+     * @var object
+     */
     public $latest_package;
 
+    /**
+     * Set up and process the incoming request.
+     */
     public function __construct()
     {
         $action = '';
@@ -77,6 +88,10 @@ class WP_Theme_Updater
         }
     }
 
+    /**
+     * Process a `basic_check` request.
+     * @return void
+     */
     public function basic_check()
     {
         if (version_compare($this->request_args['version'], $this->latest_package->version, '<')) {
@@ -92,6 +107,10 @@ class WP_Theme_Updater
         }
     }
 
+    /**
+     * Process a `theme_update` request.
+     * @return void
+     */
     public function theme_update()
     {
         if (version_compare($this->request_args['version'], $this->latest_package->version, '<')) {
@@ -113,6 +132,10 @@ class WP_Theme_Updater
         }
     }
 
+    /**
+     * Process a `theme_information` request.
+     * @return  void
+     */
     public function theme_information()
     {
         $this->respond(array(
@@ -121,6 +144,11 @@ class WP_Theme_Updater
         ));
     }
 
+    /**
+     * Get a theme slug from a post request.
+     * @param  string      $post_request Serialized standard object
+     * @return string|void               Theme's slug
+     */
     public function get_request_slug($post_request)
     {
         $matches;
@@ -133,6 +161,11 @@ class WP_Theme_Updater
         }
     }
 
+    /**
+     * Get a theme version from a post request.
+     * @param  string      $post_request Serialized standard object
+     * @return string|void               Theme's version
+     */
     public function get_request_version($post_request)
     {
         $matches;
@@ -145,6 +178,11 @@ class WP_Theme_Updater
         }
     }
 
+    /**
+     * Return a response for the UA.
+     * @param  array $args Parameters for output
+     * @return void
+     */
     public function respond($args = array())
     {
         $defaults = array(
