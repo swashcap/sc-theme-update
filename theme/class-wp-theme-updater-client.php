@@ -93,7 +93,7 @@ class WP_Theme_Updater_Client
         $options = array(
             'timeout' => $timeout,
             'body' => array(
-                'themes' => wp_json_encode($request)
+                'request' => wp_json_encode($request)
             )
         );
 
