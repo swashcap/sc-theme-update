@@ -1,73 +1,71 @@
 <?php
+/**
+ * WordPress Theme Updater.
+ *
+ * @author   Cory Reed <swashcap@gmail.com>
+ * @package  WP_Theme_Updater
+ */
 
 class WP_Theme_Updater_Package
 {
-    public static $valid_package_properties = array('author', 'name', 'screenshot_url', 'url', 'version', 'date', 'file_name', 'requires', 'tested');
+    private static $package_required_keys = array('version', 'file_name');
 
-    public $versions = array();
+    public $packages = array();
 
     public function __construct($args = array())
     {
-        $defaults = array(
-            'slug' => ''
-        );
-
-        $args = array_merge($defaults, $args);
-
-        if (! isset($args['slug']) || empty($args['slug'])) {
-            error_log('Theme slug required for WP_Theme_Updater_Package');
-            exit;
-        }
-
         if (file_exists(WP_THEME_UPDATER_VERSIONS_FILE)) {
-            $this->versions = json_decode(file_get_contents(WP_THEME_UPDATER_VERSIONS_FILE), true);
+            $versions = json_decode(file_get_contents(WP_THEME_UPDATER_VERSIONS_FILE), true);
+
+            if (isset($versions['packages']) && ! empty($versions['packages'])) {
+                $packages = $versions['packages'];
+
+                if (isset($versions['defaults']) && ! empty($versions['defaults'])) {
+                    foreach ($packages as $key => &$package) {
+                        $package = array_merge($versions['defaults'], $package);
+
+                        if (self::is_valid_package($package)) {
+                            $package['package'] = WP_THEME_UPDATER_DOWNLOADS_URL . $package['file_name'];
+                        } else {
+                            unset($packages[$key]);
+                        }
+                    }
+                }
+
+                usort($packages, array('self', 'package_compare'));
+
+                $this->packages = $packages;
+            } else {
+                error_log('versions.json has no packages.');
+                exit;
+            }
         } else {
             error_log('versions.json file required for WP_Theme_Updater_Package');
             exit;
         }
     }
 
-    public function get_latest_package()
+    public function get_latest()
     {
-        $defaults = array();
-        $latest_package = array();
-        $data = new stdClass;
+        return array_shift($this->packages);
+    }
 
-        if (isset($this->versions['defaults'])) {
-            $defaults = $this->versions['defaults'];
-        }
-        if (isset($this->versions['packages'])) {
-            $latest_package = array_shift($this->versions['packages']);
-        }
-
-        $latest_package = array_merge($defaults, $latest_package);
-
-        if (! count($latest_package)) {
-            error_log('versions.json has no latest package for WP_Theme_Updater_Package');
-            exit;
-        }
-
-        foreach (self::$valid_package_properties as $key) {
-            if (isset($latest_package[$key]) && ! empty($latest_package[$key])) {
-                $data->{$key} = $latest_package[$key];
-            } else {
-                error_log('versions.json lacks required "' . $key . '" property for WP_Theme_Updater_Package');
-                exit;
+    private static function is_valid_package($package)
+    {
+        foreach (self::$package_required_keys as $required_key) {
+            if (
+                ! isset($package[$required_key]) ||
+                 empty($package[$required_key])
+            ) {
+                return false;
             }
         }
 
-        $data->package = $this->get_package($data->file_name);
-
-        return $data;
+        return true;
     }
 
-    public function get_package($file_name = '')
+    private static function package_compare($a, $b)
     {
-        // $package = WP_THEME_UPDATER_DOWNLOADS_URL;
-        // $package .= 'download.php?key=';
-        // $package .= md5($file_name . mktime(0, 0, 0, date('n'), date('j'), date('Y')));
-
-        // return $package;
-        return WP_THEME_UPDATER_DOWNLOADS_URL . $file_name;
+        return version_compare($b['version'], $a['version']);
     }
 }
