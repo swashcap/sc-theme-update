@@ -102,7 +102,7 @@ class WP_Theme_Updater_Client
         if (is_wp_error($raw_response)) {
             return $raw_response;
         } else if (wp_remote_retrieve_response_code($raw_response) !== 200) {
-            return new WP_Error('broke', __('Theme update failed:') . ' ' . print_r($raw_response));
+            return new WP_Error('broke', __('Theme update failed:'), $raw_response);
         }
 
         $response = json_decode(wp_remote_retrieve_body($raw_response), true);
