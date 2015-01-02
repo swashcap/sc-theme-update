@@ -3,7 +3,7 @@
  * WordPress Theme Updater.
  *
  * @author   Cory Reed <swashcap@gmail.com>
- * @package  WP_Theme_Updater
+ * @package  SC_Theme_Updater
  */
 
 class SC_Theme_Updater_Package
@@ -14,8 +14,8 @@ class SC_Theme_Updater_Package
 
     public function __construct($args = array())
     {
-        if (file_exists(WP_THEME_UPDATER_VERSIONS_FILE)) {
-            $versions = json_decode(file_get_contents(WP_THEME_UPDATER_VERSIONS_FILE), true);
+        if (file_exists(SC_THEME_UPDATER_VERSIONS_FILE)) {
+            $versions = json_decode(file_get_contents(SC_THEME_UPDATER_VERSIONS_FILE), true);
 
             if (isset($versions['packages']) && ! empty($versions['packages'])) {
                 $packages = $versions['packages'];
@@ -25,7 +25,7 @@ class SC_Theme_Updater_Package
                         $package = array_merge($versions['defaults'], $package);
 
                         if (self::is_valid_package($package)) {
-                            $package['package'] = WP_THEME_UPDATER_DOWNLOADS_URL . $package['file_name'];
+                            $package['package'] = SC_THEME_UPDATER_DOWNLOADS_URL . $package['file_name'];
                         } else {
                             unset($packages[$key]);
                         }

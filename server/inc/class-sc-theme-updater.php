@@ -3,7 +3,7 @@
  * WordPress Theme Updater.
  *
  * @author   Cory Reed <swashcap@gmail.com>
- * @package  WP_Theme_Updater
+ * @package  SC_Theme_Updater
  */
 
 require_once 'class-sc-theme-updater-package.php';

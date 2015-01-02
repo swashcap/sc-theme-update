@@ -2,24 +2,24 @@
 /**
  * WordPress Theme Update Client.
  *
- * This class relies on one PHP constants, `WP_THEME_UPDATER_API_URL`. This
+ * This class relies on one PHP constants, `SC_THEME_UPDATER_API_URL`. This
  * tells the class what URL to query for theme updates. Add it in your
  * _functions.php_ or another theme configuration file like so:
  *
  * ```
- * define('WP_THEME_UPDATER_API_URL', 'http://yoursite.com/path/to/update/api');
+ * define('SC_THEME_UPDATER_API_URL', 'http://yoursite.com/path/to/update/api');
  * ```
  *
  * You may want to test your theme updates during theme development. To force
  * update server queries for every visit to _Updates_ page visit, set
- * `WP_THEME_UPDATER_ALWAYS_UPDATE`:
+ * `SC_THEME_UPDATER_ALWAYS_UPDATE`:
  *
  * ```
- * define('WP_THEME_UPDATER_ALWAYS_UPDATE', true);
+ * define('SC_THEME_UPDATER_ALWAYS_UPDATE', true);
  * ```
  *
  * @author   Cory Reed <swashcap@gmail.com>
- * @package  WP_Theme_Updater
+ * @package  SC_Theme_Updater
  */
 
 class SC_Theme_Updater_Client
@@ -63,7 +63,7 @@ class SC_Theme_Updater_Client
      */
     public static function maybe_set_update_transient()
     {
-        if (defined('WP_THEME_UPDATER_ALWAYS_UPDATE') && WP_THEME_UPDATER_ALWAYS_UPDATE) {
+        if (defined('SC_THEME_UPDATER_ALWAYS_UPDATE') && SC_THEME_UPDATER_ALWAYS_UPDATE) {
             set_site_transient('update_themes', null);
         }
     }
@@ -133,8 +133,8 @@ class SC_Theme_Updater_Client
      */
     public static function set_theme_data()
     {
-        if (defined('WP_THEME_UPDATER_API_URL') && WP_THEME_UPDATER_API_URL) {
-            self::$api_url = WP_THEME_UPDATER_API_URL;
+        if (defined('SC_THEME_UPDATER_API_URL') && SC_THEME_UPDATER_API_URL) {
+            self::$api_url = SC_THEME_UPDATER_API_URL;
         } else {
             return new WP_Error(
                 'themes_api_failed',
@@ -153,4 +153,4 @@ class SC_Theme_Updater_Client
     }
 }
 
-WP_Theme_Updater_Client::init();
+SC_Theme_Updater_Client::init();
