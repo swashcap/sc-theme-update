@@ -6,9 +6,9 @@
  * @package  WP_Theme_Updater
  */
 
-require_once 'class-wp-theme-updater-package.php';
+require_once 'class-sc-theme-updater-package.php';
 
-class WP_Theme_Updater
+class SC_Theme_Updater
 {
     /**
      * Initialize.
@@ -81,7 +81,7 @@ class WP_Theme_Updater
      */
     public static function get_latest_package()
     {
-        $package = new WP_Theme_Updater_Package();
+        $package = new SC_Theme_Updater_Package();
 
         $package = $package->get_latest();
 

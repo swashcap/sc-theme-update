@@ -22,7 +22,7 @@
  * @package  WP_Theme_Updater
  */
 
-class WP_Theme_Updater_Client
+class SC_Theme_Updater_Client
 {
     /**
      * Theme's update API url.

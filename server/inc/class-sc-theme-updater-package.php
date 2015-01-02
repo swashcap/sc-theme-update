@@ -6,7 +6,7 @@
  * @package  WP_Theme_Updater
  */
 
-class WP_Theme_Updater_Package
+class SC_Theme_Updater_Package
 {
     private static $package_required_keys = array('version', 'file_name');
 
