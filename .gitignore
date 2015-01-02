@@ -2,3 +2,5 @@
 *.log
 
 versions.json
+server/downloads*
+!server/downloads/.gitkeep
